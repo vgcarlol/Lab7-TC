@@ -81,46 +81,10 @@ def eliminar_producciones_epsilon(gramatica):
 
 # Función para eliminar producciones unarias (A -> B)
 def eliminar_producciones_unarias(gramatica):
-    nuevas_producciones = []
-    unarias = {}
-
-    # Identificar las producciones unarias y no unarias
-    for produccion in gramatica:
-        no_terminal, cuerpo = produccion.split("->")
-        no_terminal = no_terminal.strip()
-        cuerpos = [p.strip() for p in cuerpo.split('|')]
-
-        for c in cuerpos:
-            if len(c) == 1 and c.isupper():
-                if no_terminal not in unarias:
-                    unarias[no_terminal] = set()
-                unarias[no_terminal].add(c)
-            else:
-                nuevas_producciones.append(f"{no_terminal} -> {c}")
-
-    # Expandir las producciones unarias
-    while unarias:
-        no_terminal, derivados = unarias.popitem()
-        nuevas_cuerpos = set()
-
-        for derivado in derivados:
-            for produccion in nuevas_producciones:
-                prod_no_terminal, prod_cuerpo = produccion.split("->")
-                prod_no_terminal = prod_no_terminal.strip()
-                prod_cuerpos = [p.strip() for p in prod_cuerpo.split('|')]
-
-                if prod_no_terminal == derivado:
-                    nuevas_cuerpos.update(prod_cuerpos)
-
-        if nuevas_cuerpos:
-            nuevas_producciones.append(f"{no_terminal} -> {' | '.join(nuevas_cuerpos)}")
-
-    # Consolidar las producciones resultantes para eliminar duplicados
-    return consolidar_producciones(nuevas_producciones)
-
-# Función para consolidar producciones duplicadas
-def consolidar_producciones(gramatica):
     producciones_dict = {}
+    nuevas_producciones = []
+
+    # Crear un diccionario con todas las producciones
     for produccion in gramatica:
         no_terminal, cuerpo = produccion.split("->")
         no_terminal = no_terminal.strip()
@@ -130,10 +94,29 @@ def consolidar_producciones(gramatica):
             producciones_dict[no_terminal] = set()
         producciones_dict[no_terminal].update(cuerpos)
 
-    # Generar las producciones consolidadas
-    nuevas_producciones = []
+    # Eliminar las producciones unarias (A -> B) y expandir las producciones si es necesario
+    cambios = True
+    while cambios:
+        cambios = False
+        for no_terminal in list(producciones_dict.keys()):
+            cuerpos = producciones_dict[no_terminal]
+            nuevos_cuerpos = set()
+            for cuerpo in cuerpos:
+                if len(cuerpo) == 1 and cuerpo.isupper() and cuerpo != no_terminal:
+                    # Expandir solo si B tiene una producción que A no tiene aún
+                    nuevos_cuerpos.update(producciones_dict[cuerpo] - producciones_dict[no_terminal])
+                    cambios = True
+                else:
+                    nuevos_cuerpos.add(cuerpo)
+
+            if nuevos_cuerpos != cuerpos:
+                cambios = True
+                producciones_dict[no_terminal] = nuevos_cuerpos
+
+    # Generar las producciones consolidadas sin duplicados
     for no_terminal, cuerpos in producciones_dict.items():
-        nuevas_producciones.append(f"{no_terminal} -> {' | '.join(cuerpos)}")
+        cuerpos_unicos = sorted(set(cuerpos))
+        nuevas_producciones.append(f"{no_terminal} -> {' | '.join(cuerpos_unicos)}")
 
     return nuevas_producciones
 
