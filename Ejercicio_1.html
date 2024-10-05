@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procedimiento del Ejercicio de CFG</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+
+        .section {
+            background: #fff;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            color: #4a90e2;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        pre {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1em;
+            overflow-x: auto;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            h3 {
+                font-size: 1.2em;
+            }
+
+            .section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Resolución del Ejercicio de CFG</h1>
+
+        <div class="section">
+            <h2>Para la Gramática CFG 1</h2>
+
+            <h3>Paso a: Eliminar las producciones-ε</h3>
+            <pre>
+1. S → 0A0 | 1B1 | BB
+2. A → C
+3. B → S | A
+4. C → S
+
+Eliminar C → ε:
+- Actualizar producciones que contienen C:
+    - A → C se convierte en A → C | ε
+
+Nuevas producciones:
+1. S → 0A0 | 1B1 | BB
+2. A → C | ε
+3. B → S | A
+4. C → S
+            </pre>
+
+            <h3>Paso b: Eliminar producciones unitarias</h3>
+            <pre>
+Eliminar producciones unitarias como A → C, B → S, y B → A:
+- Sustituir A → C con A → S ya que C → S
+- Sustituir B → S con las producciones de S
+- Sustituir B → A con las producciones de A
+
+Nuevas producciones:
+1. S → 0A0 | 1B1 | BB
+2. A → S | ε
+3. B → 0A0 | 1B1 | BB | S | ε
+4. C → S
+            </pre>
+
+            <h3>Paso c: Eliminar símbolos inútiles</h3>
+            <pre>
+1. Remover símbolos que no producen: Todos los símbolos producen.
+2. Remover símbolos no alcanzables: Todos los símbolos son alcanzables desde S.
+            </pre>
+
+            <h3>Paso d: Colocar la CFG en Forma Normal de Chomsky (CNF)</h3>
+            <pre>
+Descomponer producciones complejas en binarias o terminales.
+
+Nuevas producciones:
+1. S → X1 A 0 | X2 B 1 | BB
+2. X1 → 0
+3. X2 → 1
+4. A → S | ε
+5. B → X1 A 0 | X2 B 1 | BB | S | ε
+6. C → S
+            </pre>
+        </div>
+
+        <div class="section">
+            <h2>Para la Gramática CFG 2</h2>
+
+            <h3>Paso a: Eliminar las producciones-ε</h3>
+            <pre>
+1. S → aAa | bBb | a | b
+2. A → C | a | ε
+3. B → C | b
+4. C → D | ε
+5. D → A | B | ab
+
+Eliminar C → ε y E → ε:
+- Actualizar producciones que contienen C y E:
+    - S → aAa | bBb | a | b
+    - A → a | ε
+
+Nuevas producciones sin ε:
+1. S → aAa | bBb | a | b
+2. A → a
+3. B → b
+4. C → D
+5. D → A | B | ab
+            </pre>
+
+            <h3>Paso b: Eliminar producciones unitarias</h3>
+            <pre>
+Eliminar producciones unitarias como A → a, B → b, C → D:
+- Sustituir las producciones unitarias directamente por sus valores.
+
+Nuevas producciones:
+1. S → aAa | bBb | a | b
+2. A → a
+3. B → b
+4. C → a | b | ab
+5. D → a | b | ab
+            </pre>
+
+            <h3>Paso c: Eliminar símbolos inútiles</h3>
+            <pre>
+1. Remover símbolos que no producen: Todos los símbolos producen.
+2. Remover símbolos no alcanzables: Todos los símbolos son alcanzables.
+            </pre>
+
+            <h3>Paso d: Colocar la CFG en Forma Normal de Chomsky (CNF)</h3>
+            <pre>
+Descomponer producciones complejas en binarias o terminales.
+
+Nuevas producciones en CNF:
+1. S → X1 A X1 | X2 B X2 | a | b
+2. A → a
+3. B → b
+4. C → a | b | X3 X4
+5. D → a | b | X3 X4
+6. X1 → a
+7. X2 → b
+8. X3 → a
+9. X4 → b
+            </pre>
+        </div>
+    </div>
+</body>
+
+</html>
