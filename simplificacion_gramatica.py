@@ -13,7 +13,8 @@ def cargar_gramatica(nombre_archivo):
 
 # Función para validar la sintaxis de una producción
 def validar_produccion(produccion):
-    regex = r"^[A-Z]\s*->\s*([a-zA-Z0-9]+(\s*\|\s*[a-zA-Z0-9]+)*)*$"
+    # Regex mejorada para aceptar producciones más complejas
+    regex = r"^[A-Z][a-zA-Z0-9_]*\s*->\s*((([a-z][a-zA-Z0-9_]*|\d+)|([A-Z][a-zA-Z0-9_]*))(\s*\|\s*(([a-z][a-zA-Z0-9_]*|\d+)|([A-Z][a-zA-Z0-9_]*)))*)*$"
     return re.match(regex, produccion)
 
 # Función para validar una gramática completa
@@ -57,7 +58,7 @@ def eliminar_producciones_epsilon(gramatica):
         # Generar nuevas producciones sin los símbolos anulables
         nuevas_subproducciones = set(cuerpos)
         for c in cuerpos:
-            simbolos = list(filter(lambda x: x in anulables, c))
+            simbolos = list(filter(lambda x: x in anulables, c.split()))
             for subconjunto in obtener_subconjuntos(simbolos):
                 nueva_produccion = c
                 for simbolo in subconjunto:
@@ -100,7 +101,8 @@ def eliminar_producciones_unarias(gramatica):
         nuevos_cuerpos = set()
 
         for cuerpo in cuerpos:
-            if len(cuerpo) == 1 and cuerpo.isupper() and cuerpo != no_terminal:
+            # Comprobar si la producción es unaria y si existe en el diccionario
+            if len(cuerpo.split()) == 1 and cuerpo in producciones_dict and cuerpo != no_terminal:
                 # Solo agregar las producciones de 'cuerpo' si son nuevas
                 nuevos_cuerpos.update(producciones_dict[cuerpo] - cuerpos)
             else:
