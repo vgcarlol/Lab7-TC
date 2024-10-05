@@ -94,31 +94,32 @@ def eliminar_producciones_unarias(gramatica):
             producciones_dict[no_terminal] = set()
         producciones_dict[no_terminal].update(cuerpos)
 
-    # Eliminar las producciones unarias (A -> B) y expandir las producciones si es necesario
-    cambios = True
-    while cambios:
-        cambios = False
-        for no_terminal in list(producciones_dict.keys()):
-            cuerpos = producciones_dict[no_terminal]
-            nuevos_cuerpos = set()
-            for cuerpo in cuerpos:
-                if len(cuerpo) == 1 and cuerpo.isupper() and cuerpo != no_terminal:
-                    # Expandir solo si B tiene una producción que A no tiene aún
-                    nuevos_cuerpos.update(producciones_dict[cuerpo] - producciones_dict[no_terminal])
-                    cambios = True
-                else:
-                    nuevos_cuerpos.add(cuerpo)
+    # Eliminar las producciones unarias (A -> B) sin copiar innecesariamente
+    for no_terminal in list(producciones_dict.keys()):
+        cuerpos = producciones_dict[no_terminal]
+        nuevos_cuerpos = set()
 
-            if nuevos_cuerpos != cuerpos:
-                cambios = True
-                producciones_dict[no_terminal] = nuevos_cuerpos
+        for cuerpo in cuerpos:
+            if len(cuerpo) == 1 and cuerpo.isupper() and cuerpo != no_terminal:
+                # Solo agregar las producciones de 'cuerpo' si son nuevas
+                nuevos_cuerpos.update(producciones_dict[cuerpo] - cuerpos)
+            else:
+                nuevos_cuerpos.add(cuerpo)
+
+        producciones_dict[no_terminal] = nuevos_cuerpos
 
     # Generar las producciones consolidadas sin duplicados
     for no_terminal, cuerpos in producciones_dict.items():
         cuerpos_unicos = sorted(set(cuerpos))
         nuevas_producciones.append(f"{no_terminal} -> {' | '.join(cuerpos_unicos)}")
 
-    return nuevas_producciones
+    # Filtrar y evitar duplicaciones en otros no-terminales
+    producciones_finales = set()
+    for produccion in nuevas_producciones:
+        if produccion not in producciones_finales:
+            producciones_finales.add(produccion)
+
+    return sorted(producciones_finales)
 
 # Función principal para ejecutar el programa
 def main():
