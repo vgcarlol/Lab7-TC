@@ -84,7 +84,7 @@ def eliminar_producciones_unarias(gramatica):
     nuevas_producciones = []
     unarias = {}
 
-    # Identificar las producciones unarias
+    # Identificar las producciones unarias y no unarias
     for produccion in gramatica:
         no_terminal, cuerpo = produccion.split("->")
         no_terminal = no_terminal.strip()
@@ -99,8 +99,10 @@ def eliminar_producciones_unarias(gramatica):
                 nuevas_producciones.append(f"{no_terminal} -> {c}")
 
     # Expandir las producciones unarias
-    for no_terminal, derivados in unarias.items():
+    while unarias:
+        no_terminal, derivados = unarias.popitem()
         nuevas_cuerpos = set()
+
         for derivado in derivados:
             for produccion in nuevas_producciones:
                 prod_no_terminal, prod_cuerpo = produccion.split("->")
@@ -112,6 +114,26 @@ def eliminar_producciones_unarias(gramatica):
 
         if nuevas_cuerpos:
             nuevas_producciones.append(f"{no_terminal} -> {' | '.join(nuevas_cuerpos)}")
+
+    # Consolidar las producciones resultantes para eliminar duplicados
+    return consolidar_producciones(nuevas_producciones)
+
+# Función para consolidar producciones duplicadas
+def consolidar_producciones(gramatica):
+    producciones_dict = {}
+    for produccion in gramatica:
+        no_terminal, cuerpo = produccion.split("->")
+        no_terminal = no_terminal.strip()
+        cuerpos = [p.strip() for p in cuerpo.split('|')]
+
+        if no_terminal not in producciones_dict:
+            producciones_dict[no_terminal] = set()
+        producciones_dict[no_terminal].update(cuerpos)
+
+    # Generar las producciones consolidadas
+    nuevas_producciones = []
+    for no_terminal, cuerpos in producciones_dict.items():
+        nuevas_producciones.append(f"{no_terminal} -> {' | '.join(cuerpos)}")
 
     return nuevas_producciones
 
