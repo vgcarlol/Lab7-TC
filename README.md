@@ -46,7 +46,9 @@ Este repositorio contiene la solución al **Laboratorio No. 7**, relacionado con
 
 He grabado un video de demostración donde muestro la ejecución del programa y explico brevemente cada paso del proceso de simplificación. Puedes ver el video en YouTube haciendo clic en el siguiente enlace:
 
-- [Video de Demostración - Simplificación de Gramáticas](https://youtu.be/cZSwpsKyE4o)
+- [Video de Explicación - Simplificación de Gramáticas](https://youtu.be/cZSwpsKyE4o)
+- [Video de Demostración - Simplificación de Gramáticas](https://youtu.be/gZ9fEp4WeTA)
+
 
 ## Estructura del Proyecto
 
